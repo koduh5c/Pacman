@@ -1,4 +1,4 @@
-Pacman Project
+Pacman
 
 To run, download zip folder and from root folder, type 'gradle run'
 
