@@ -1,0 +1,237 @@
+@startuml umldiagram
+skinparam Style strictuml
+skinparam SequenceMessageAlignment center
+
+class App {
+    + {static} WIDTH : int
+    + {static} HEIGHT: int
+    + {static} TILEHEIGHT : int
+    + {static} TILEWIDTH : int
+    - gm : GameManager
+
+    + App()
+    + setup() : void
+    + settings() : void
+    + keyReleased() : void
+    + draw() : void
+    + {static} main(args : String[]) : void
+}
+
+class GameManager {
+    - config : Config
+    - map : Map
+    - waka : Waka
+    - fruits : Fruits
+    - ghosts : List<Ghost>
+    - gameOverFont : PFont
+    - gameOverTimer : int
+
+    + GameManager()
+    + setup(app : PApplet) : void
+    + draw(app : PApplet) : void
+    + loadGhosts(app : PApplet, tiles : String[][]) : void
+    + getGhosts() : List<Ghost>
+    + tickGhosts() : void
+    + drawGhosts() : void
+    + checkForWakasCollisionWithGhosts() : void
+    + drawWinScreen(app : PApplet) : void
+    + drawGameOverScreen(app : PApplet) : void
+    + keyPressed(app : PApplet) : void
+    + keyReleased(key : char) : void
+}
+
+class Fruits {
+    - fruitImage : PImage
+    - sodaCanImage : PImage
+    - tiles : String[][]
+    - fruits : HashSet<List<Integer>>
+    - superFruits : HashSet<List<Integer>>
+    - sodaCans : HashSet<List<Integer>>
+    - superFruitWasEaten : boolean
+    - sodaCanWasDrunk : boolean
+    - playerHasWon : boolean
+
+    + Fruits(tiles : String[][])
+    + getImage(fruitImage : PImage, sodaCanImage : PImage) : void
+    + getFruits() : HashSet<List<Integer>>
+    + getSuperFruits() : HashSet<List<Integer>>
+    + getSodaCans() : HashSet<List<Integer>>
+    + getConsumables() : void
+    + checkWhatWakaAte(row : int, col : int) : void
+    + playerHasWon() : boolean
+    + checkEatenFruits() : void
+    + superFruitWasEaten() : boolean
+    + sodaCanWasDrunk() : boolean
+    + draw(app : PApplet) : void
+    + drawFruits(app : PApplet) : void
+    + drawSuperFruits(app : PApplet) : void
+    + drawSodaCans(app : PApplet) : void
+    + restartGame() : void
+}
+
+class Config {
+    - mapFileName : String
+    - lives : int
+    - speed : int
+    - frightenedLength : int
+    - modeLengths : List<Integer>
+
+    + Config(configFileName : String)
+    + getMapFileName() : String
+    + getLives() : int
+    + getSpeed() : int
+    + getFrightenedLength() : int
+    + getModeLengths() : List<Integer>
+    + loadConfigFile(configFileName : String) : void
+}
+
+class Ghost extends Movable {
+    - ghostImage : PImage
+    - frightenedImage : PImage
+    - modeLengths : List<Integer>
+    - modeCursor : int
+    - modeTimer : int
+    - frightenedLength : int
+    - frightenedTimer : int
+    - lastMove : char
+    - isChasing : boolean
+    - isFrightened : boolean
+    - isInSodaCanMode : boolean
+    - isInDebugMode : boolean
+    - target : int[]
+    - chaserTile : int[]
+
+    + Ghost(tiles : String[][], modeLengths : List<Integer>, frightenedLength : int, speed : int, letter : String)
+    + getImage(PImage ghostImage, PImage frightenedImage) : void
+    + toggleDebugMode() : void
+    + die() : void
+    + resuscitate() : void
+    + moveUp() : void
+    + moveLeft() : void
+    + moveRight() : void
+    + moveDown() : void
+    + getDistance(rowFrom : int, colFrom : int, rowTo : int, colTo : int) : double
+    + isFrightened() : boolean
+    + setDirection(choice : double, up : double, left : double, right : double, down : double) : void
+    + move() : void
+    + setChaserTarget(waka : Waka) : void
+    + setAmbusherTarget(waka : Waka) : void
+    + setIgnorantTarget(waka : Waka) : void
+    + setWhimTarget(waka : Waka) : void
+    + setTargetToWaka(waka : Waka) : void
+    + setTargetToNearestCorner() : void
+    + setMode() : void
+    + incrementTimer(app : PApplet) : void
+    + getChaserTile(chaser : Ghost) : void
+    + tick(waka : Waka, fruits : Fruits) : void
+    + draw(app : PApplet) : void
+    + checkIfSpecialWasEaten(fruits : Fruits) : void
+    + drawGhost(app : PApplet) : void
+    + drawDebugModeLine(app : PApplet) : void
+    + restartGame() : void
+}
+
+class Map {
+    - tiles : String[][]
+    - horizontal : PImage
+    - vertical : PImage
+    - upLeft : PImage
+    - upRight : PImage
+    - downLeft : PImage
+    - downRight : PImage
+
+    + Map(mapFileName : String) : void
+    + getTiles() : String[][]
+    + getImage(horizontal : PImage, vertical : PImage, upLeft : PImage, upRight : PImage, downLeft : PImage, downRight : PImage) : void
+    + loadMap(mapFileName : String) : void
+    + draw(app : PApplet) : void
+
+}
+
+class Waka extends Movable {
+    - playerClosed : PImage
+    - playerDown : PImage
+    - playerLeft : PImage
+    - playerRight : PImage
+    - playerUp : PImage
+    - currentImage : PImage
+    - isMoving : char
+    - defaultLives : int
+    - livesLeft : int
+
+    + Waka(String[][] tiles, int speed, int livesLeft, String letter)
+    + getImage(playerClosed : PImage, playerDown : PImage, playerLeft : PImage, playerRight : PImage, playerUp : PImage)
+    + getLivesLeft() : int
+    + isMoving() : char
+    + setToMoveUp() : void
+    + setToMoveDown() : void
+    + setToMoveLeft() : void
+    + setToMoveRight() : void
+    + move() : void
+    + drawWaka(app : PApplet) : void
+    + drawLives(app : PApplet) : void
+    + die() : void
+    + resuscitate() : void
+    + hasDied() : boolean
+    + tick() : void
+    + draw(app : PApplet) : void
+    + restartGame() : void
+}
+
+abstract class Movable {
+    # canGoUp : boolean
+    # canGoDown : boolean
+    # canGoLeft : boolean
+    # canGoRight : boolean
+    # tiles : String[][]
+    # walkableLetters : String[]
+    # speed : int
+    # currentPosition : int[]
+    # startPosition : int[]
+    # letter : String
+    # isAlive : isAlive
+
+    + Movable(String[][] tiles, int speed, String letter)
+    + {abstract} move() : void
+    + {abstract} draw(PApplet app) : void
+    + {abstract} restartGame() : void
+    + getLetter() : String
+    + getRow() : int
+    + getRowCenter() : int
+    + getRowTile() : int
+    + getRowTileCenter() : int
+    + getCol() : int
+    + getColCenter() : int
+    + getColTile() : int
+    + getColTileCenter() : int
+    + upperTileCenter() : int[]
+    + lowerTileCenter() : int[]
+    + leftTileCenter() : int[]
+    + rightTileCenter() : int[]
+    + upperTileIsWalkable() : boolean
+    + lowerTileIsWalkable() : boolean
+    + leftTileIsWalkable() : boolean
+    + rightTileIsWalkable() : boolean
+    + checkWallCollisions() : void
+    + getStartPosition(String s) :
+    + isWalkable(row : int, col : int) :
+    + isAtIntersection() : boolean
+    + isAtDeadEnd() : boolean
+    + resetPosition() : void
+}
+
+App -- GameManager
+GameManager --> Fruits
+GameManager --> Config
+GameManager --> Waka
+GameManager --> Ghost
+GameManager --> Map
+Config o-- Map
+Config o-- Waka
+Waka o-- Fruits
+Map o-- Waka
+Map o-- Fruits
+Map o-- Ghost
+Fruits o-- Ghost
+
+@enduml
